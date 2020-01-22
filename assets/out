@@ -1,0 +1,43 @@
+#!/bin/bash
+
+set -e
+
+exec 3>&1 # make stdout available as fd 3 for the result
+exec 1>&2 # redirect all output to stderr for logging
+
+source $(dirname $0)/common.sh
+
+source=$1
+
+if [ -z "$source" ]; then
+  echo "usage: $0 <path/to/source>"
+  exit 1
+fi
+
+# for jq
+PATH=/usr/local/bin:$PATH
+
+payload=$(mktemp $TMPDIR/rclone-resource-request.XXXXXX)
+cat > $payload <&0
+
+load_config $payload
+load_files $payload
+
+rclone_source_directory=$(jq -r '.params.source // ""' < $payload)
+rclone_destination=$(jq -r '.params.destination // ""' < $payload)
+rclone_destination_subdir=$(jq -r '.params.subdir // ""' < $payload)
+
+if [ -z "$rclone_source_directory" ]; then
+  echo "invalid source directory (missing source)"
+  exit 1
+fi
+
+if [ -z "$rclone_destination" ]; then
+  echo "invalid destination (missing destination)"
+  exit 1
+fi
+
+rclone_source="local:${source}/${rclone_source_directory}"
+rclone_target="${rclone_destination}${rclone_destination_subdir}"
+
+rclone copy "${rclone_source}" "${rclone_target}"

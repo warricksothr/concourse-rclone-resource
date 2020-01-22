@@ -1,0 +1,32 @@
+---
+resources:
+  - name: git-resource
+    type: git
+    icon: git
+    source:
+      uri: ssh://git@git.nulloctet.com:8437/docker/concourse-rclone-resource.git
+      private_key: |
+        ((pull_key))
+      ignore_paths:
+        - pipeline.yml
+        - upload_pipeline.sh
+        - README.md
+  - name: git-resource-image
+    type: docker-image
+    icon: docker
+    source:
+      repository: ((nexus_docker_write.host))/concourse/rclone-resource
+      username: ((nexus_docker_write.username))
+      password: ((nexus_docker_write.password))
+
+jobs:
+  - name: build-image
+    plan:
+    - get: git-resource
+      trigger: true
+    - put: git-resource-image
+      params: 
+        build: git-resource
+        tag_file: git-resource/tag
+        tag_as_latest: true
+      get_params: {skip_download: true}
