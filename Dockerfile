@@ -21,6 +21,6 @@ RUN cd /tmp \
 
 COPY ./assets/* /opt/resource/
 
-RUN chmod +x /opt/resource/check \
+RUN chmod 755 /opt/resource/check \
     && chmod +x /opt/resource/in \
     && chmod +x /opt/resource/out
