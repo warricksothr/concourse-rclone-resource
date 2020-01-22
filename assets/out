@@ -25,12 +25,20 @@ PATH=/usr/local/bin:$PATH
 payload=$(mktemp $TMPDIR/rclone-resource-request.XXXXXX)
 cat > $payload <&0
 
+# TODO: Remove Me - DEBUGGING
+echo "Payload:"
+cat $payload
+
 load_config $payload
 load_files $payload
 
 rclone_source_directory=$(jq -r '.params.source // ""' < $payload)
 rclone_destination=$(jq -r '.params.destination // ""' < $payload)
 rclone_destination_subdir_file=$(jq -r '.params.subdir // ""' < $payload)
+
+echo "Source directory: $rclone_source_directory"
+echo "Destination: $rclone_destination"
+echo "Destination subdir file: $rclone_destination_subdir_file"
 
 if [ -z "$rclone_source_directory" ]; then
   echo "invalid source directory (missing source)"

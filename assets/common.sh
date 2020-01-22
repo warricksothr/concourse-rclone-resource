@@ -21,10 +21,18 @@ load_config() {
 }
 
 load_files() {
-    local files=$(jq -r '.source.files | keys | join(" ")' < $1)
+    set +e
+    local files=$(jq -r '.source.files | keys | join(" ") // ""' < $1) 2> /dev/null
+    set -e
+    # TODO: Remove Me - DEBUGGING
+    echo "Files:"
+    echo $files
     for fileName in files; do
         local jq_path=".source.files.${fileName}"
         local content=$(jq -r "${jq_path}" < $1)
         echo "$content" > "/tmp/${fileName}"
+        # TODO: Remove Me - DEBUGGING
+        echo "File /tmp/${fileName}"
+        cat /tmp/${fileName}
     done
 }
