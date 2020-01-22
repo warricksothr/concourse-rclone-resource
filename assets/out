@@ -64,4 +64,4 @@ echo "Target: ${rclone_target}"
 
 rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf
 
-echo "${BUILD_PIPELINE_NAME}-${BUILD_ID}" | md5sum >&3
+echo "${BUILD_PIPELINE_NAME}-${BUILD_ID}" | md5sum | cut -d' ' -f1 >&3
