@@ -27,7 +27,7 @@ load_files() {
     # TODO: Remove Me - DEBUGGING
     echo "Files:"
     echo $files
-    for fileName in files; do
+    for fileName in "$files"; do
         local jq_path=".source.files.${fileName}"
         local content=$(jq -r "${jq_path}" < $1)
         echo "$content" > "/tmp/${fileName}"

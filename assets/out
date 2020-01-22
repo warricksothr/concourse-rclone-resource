@@ -52,11 +52,12 @@ fi
 
 rclone_destination_subdir=""
 if [ ! -z "$rclone_destination_subdir_file" ]; then
-    rclone_destination_subdir=$(cat "${source}${rclone_destination_subdir}")
+    echo "Looking in ${source}/${rclone_destination_subdir} for subdir to use"
+    rclone_destination_subdir=$(cat "${source}/${rclone_destination_subdir}")
 fi
 
 rclone_source="local:${source}/${rclone_source_directory}"
-rclone_target="${rclone_destination}${rclone_destination_subdir}"
+rclone_target="${rclone_destination}/${rclone_destination_subdir}"
 
 echo "Source: ${rclone_source}"
 echo "Target: ${rclone_target}"
