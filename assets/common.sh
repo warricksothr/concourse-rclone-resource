@@ -22,7 +22,7 @@ load_config() {
 
 load_files() {
     set +e
-    local files=$(jq -r '.source.files | keys | join(" ") // ""' < $1) 2> /dev/null
+    local files=$(jq -r '.source.files? | keys? | join(" ") // ""' < $1)
     set -e
     # TODO: Remove Me - DEBUGGING
     echo "Files:"
