@@ -40,4 +40,4 @@ fi
 rclone_source="local:${source}/${rclone_source_directory}"
 rclone_target="${rclone_destination}${rclone_destination_subdir}"
 
-rclone copy "${rclone_source}" "${rclone_target}"
+rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf
