@@ -20,3 +20,7 @@ RUN cd /tmp \
     && rm -rf rclone-${rclone_version}-linux-${rclone_arch}
 
 COPY ./assets/* /opt/resource/
+
+RUN chmod +x /opt/resource/check \
+    && chmod +x /opt/resource/in \
+    && chmod +x /opt/resource/out
