@@ -62,10 +62,12 @@ rclone_target="${rclone_destination}/${rclone_destination_subdir}"
 echo "Source: ${rclone_source}"
 echo "Target: ${rclone_target}"
 
+sha256=$((find ${source}/${rclone_source_directory} -type f -exec sha256sum {} \;) | cut -d ' ' -f1)
+
 rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf
 
 jq -n "{
   version: {
-    digest: $((echo -n "md5:"; echo "test" | md5sum) | cut -d ' ' -f1 | jq -R .)
+    digest: $((echo -n "sha256:"; echo "$sha256") | jq -R .)
   }
 }" >&3
