@@ -4,9 +4,7 @@ resources:
     type: git
     icon: git
     source:
-      uri: ssh://git@git.nulloctet.com:8437/docker/concourse-rclone-resource.git
-      private_key: |
-        ((pull_key))
+      uri: https://git.nulloctet.com/docker/concourse-rclone-resource.git
       ignore_paths:
         - pipeline.yml
         - upload_pipeline.sh
