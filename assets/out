@@ -5,10 +5,10 @@ set -e
 exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
 
-echo $BUILD_ID
-echo $BUILD_NAME
-echo $BUILD_JOB_NAME
-echo $BUILD_PIPELINE_NAME
+echo "BUILD_ID: $BUILD_ID"
+echo "BUILD_NAME: $BUILD_NAME"
+echo "BUILD_JOB_NAME: $BUILD_JOB_NAME"
+echo "BUILD_PIPELINE_NAME: $BUILD_PIPELINE_NAME"
 
 source $(dirname $0)/common.sh
 
