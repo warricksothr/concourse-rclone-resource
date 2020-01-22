@@ -57,8 +57,9 @@ It's highly recommended to use secrets mangement to avoid storing sensitive cred
 #### Parameters
 
 * `source`: Required. The path to the source files.
-* `destination`: Required. The rclone destination for the files. ex. `remote:some/location`
-* `subdir`: Optional. A file that includes additional path information to be appended to the end of destination.
+* `destination`: Required. A list of destinations to copy files to.
+    * `dir`: Required. A rclone destination for the files. ex. `remote:some/location`
+    * `subdir`: Optional. A file that includes additional path information to be appended to the end of destination.
 
 #### Example
 
@@ -73,8 +74,9 @@ jobs:
     - put: rclone
       params:
         source: code
-        destination: "remote:backup"
-        subdir: code/target
+        destination: 
+          - dir: "remote:backup"
+            subdir: code/target
 ```
 
 ## License

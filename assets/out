@@ -33,38 +33,53 @@ load_config $payload
 load_files $payload
 
 rclone_source_directory=$(jq -r '.params.source // ""' < $payload)
-rclone_destination=$(jq -r '.params.destination // ""' < $payload)
-rclone_destination_subdir_file=$(jq -r '.params.subdir // ""' < $payload)
-
-echo "Source directory: $rclone_source_directory"
-echo "Destination: $rclone_destination"
-echo "Destination subdir file: $rclone_destination_subdir_file"
+rclone_destinations=$(jq -r '.params.destination[]? | .dir // ""' < $payload)
 
 if [ -z "$rclone_source_directory" ]; then
   echo "invalid source directory (missing source)"
   exit 1
 fi
 
-if [ -z "$rclone_destination" ]; then
+if [ -z "$rclone_destinations" ]; then
   echo "invalid destination (missing destination)"
   exit 1
 fi
 
-rclone_destination_subdir=""
-if [ ! -z "$rclone_destination_subdir_file" ]; then
+echo "Source directory: $rclone_source_directory"
+echo "Destinations:"
+jq -c '.params.destination[] | .dir' < $payload
+
+local_source_dir="${source}/${rclone_source_directory}"
+ls -alh ${local_source_dir}
+
+sha256=$((find ${local_source_dir} -type f -exec sha256sum {} \;) | cut -d ' ' -f1)
+
+echo "sha256:${sha256}"
+
+# Source is always the same for each destination
+rclone_source="local:${local_source_dir}"
+echo "Source: ${rclone_source}"
+
+for destination in $(jq -r '.params.destination[] | @base64'); do
+  _jq() {
+    echo ${destination} | base64 --decode | jq -r ${1}
+  }
+
+  rclone_destination=$(_jq '.dir')
+  echo "Destination: $rclone_destination"
+
+  rclone_destination_subdir_file=$(_jq '.subdir // ""')
+  echo "Destination subdir file: ${rclone_destination_subdir_file}"
+  rclone_destination_subdir=""
+  if [ ! -z "$rclone_destination_subdir_file" ]; then
     echo "Looking in ${source}/${rclone_destination_subdir_file} for subdir to use"
     rclone_destination_subdir=$(cat "${source}/${rclone_destination_subdir_file}" | head -n 1)
-fi
+  fi
 
-rclone_source="local:${source}/${rclone_source_directory}"
-rclone_target="${rclone_destination}/${rclone_destination_subdir}"
-
-echo "Source: ${rclone_source}"
-echo "Target: ${rclone_target}"
-
-sha256=$((find ${source}/${rclone_source_directory} -type f -exec sha256sum {} \;) | cut -d ' ' -f1)
-
-rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf
+  rclone_target="${rclone_destination}/${rclone_destination_subdir}"
+  echo "Target: ${rclone_target}"
+  rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf --progress
+done
 
 jq -n "{
   version: {
