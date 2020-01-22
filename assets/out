@@ -5,6 +5,11 @@ set -e
 exec 3>&1 # make stdout available as fd 3 for the result
 exec 1>&2 # redirect all output to stderr for logging
 
+echo $BUILD_ID
+echo $BUILD_NAME
+echo $BUILD_JOB_NAME
+echo $BUILD_PIPELINE_NAME
+
 source $(dirname $0)/common.sh
 
 source=$1
@@ -25,7 +30,7 @@ load_files $payload
 
 rclone_source_directory=$(jq -r '.params.source // ""' < $payload)
 rclone_destination=$(jq -r '.params.destination // ""' < $payload)
-rclone_destination_subdir=$(jq -r '.params.subdir // ""' < $payload)
+rclone_destination_subdir_file=$(jq -r '.params.subdir // ""' < $payload)
 
 if [ -z "$rclone_source_directory" ]; then
   echo "invalid source directory (missing source)"
@@ -37,7 +42,17 @@ if [ -z "$rclone_destination" ]; then
   exit 1
 fi
 
+rclone_destination_subdir=""
+if [ ! -z "$rclone_destination_subdir_file" ]; then
+    rclone_destination_subdir=$(cat "${source}${rclone_destination_subdir}")
+fi
+
 rclone_source="local:${source}/${rclone_source_directory}"
 rclone_target="${rclone_destination}${rclone_destination_subdir}"
 
+echo "Source: ${rclone_source}"
+echo "Target: ${rclone_target}"
+
 rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf
+
+md5sum "${BUILD_PIPELINE_NAME}-${BUILD_ID}" >&3
