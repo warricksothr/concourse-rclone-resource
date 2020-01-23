@@ -7,6 +7,12 @@ load_config() {
     local rclone_config_file=$rclone_config_path/.rclone.conf
 
     (jq -r '.source.config // empty' < "$1") > "$config_path"
+    config_pass=$('.source.password // ""' < "$1")
+
+    if [[ -n "${config_pass}" ]]; then
+        RCLONE_CONFIG_PASS="${config_pass}"
+        export RCLONE_CONFIG_PASS
+    fi
 
     if [ -s "$config_path" ]; then
         mkdir -p $rclone_config_path

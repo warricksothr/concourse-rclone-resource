@@ -15,12 +15,16 @@ resource_types:
   source:
     repository: warricksothr/concourse-rclone-resource
     tag: latest
+  files:
+    serviceAccountFile: |
+      ...contents...
 ```
 
 ## Source Configuration
 
 * `config`: Required. The rclone config file contents to use.
-* `files`: Optional. Additional files to write to the /tmp directory. This is a map of key/value pairs for the filename and contents of that file
+* `password`: Optional. Encryption password used for encrypted rclone configurations. Please use secrets management for this value.
+* `files`: Optional. Additional files to write to the /tmp directory. This is a map of key/value pairs for the filename and contents of that file.
 
 ### Example
 
@@ -37,9 +41,6 @@ resources:
         root_folder_id = <Your root folder id>
         service_account_file = /tmp/serviceAccountFile
         token = {"access_token":"XXX","token_type":"Bearer","refresh_token":"XXX","expiry":"2014-03-16T13:57:58.955387075Z"}
-    files:
-      serviceAccountFile: |
-        ...contents...
 ```
 
 ### Note
