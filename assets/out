@@ -50,8 +50,10 @@ local_source_dir="${source}/${rclone_source_directory}"
 ls -alh "${local_source_dir}"
 
 echo "Generating SHA256"
-(find "${local_source_dir}" -type f -exec sha256sum {} \;) | cut -d ' ' -f1 | xargs echo /tmp/rclone_source.sha256
-sha256=$(sha256sum /tmp/rclone_source.sha256 | cut -d' ' -f1)
+sha256_file="${TMPDIR}/rclone_source.sha256"
+touch "${sha256_file}"
+(find "${local_source_dir}" -type f -exec sha256sum {} \;) | cut -d ' ' -f1 | xargs echo >> "${sha256_file}"
+sha256=$(sha256sum "${sha256_file}" | cut -d' ' -f1)
 echo "sha256:${sha256}"
 
 # Source is always the same for each destination
