@@ -57,7 +57,7 @@ sha256=$(sha256sum "${sha256_file}" | cut -d' ' -f1)
 echo "sha256:${sha256}"
 
 # Source is always the same for each destination
-rclone_source="local:${local_source_dir}"
+rclone_source="${local_source_dir}"
 echo "Source: ${rclone_source}"
 
 destinations=$(jq -r '.params.destination[] | @base64' < "$payload")
