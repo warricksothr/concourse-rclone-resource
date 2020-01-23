@@ -3,6 +3,7 @@ export TMPDIR=${TMPDIR:-/tmp/rclone}
 mkdir -p "${TMPDIR}"
 
 load_config() {
+    mkdir -p "$TMPDIR/.config"
     RCLONE_CONFIG=$TMPDIR/.config/rclone_config
     export RCLONE_CONFIG
 

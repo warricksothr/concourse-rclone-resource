@@ -73,11 +73,13 @@ for destination in $destinations; do
   rclone_destination_subdir_file=$(_jq '.subdir // ""')
   rclone_dedupe=$(_jq '.dedupe // "false"')
   rclone_dedupe_mode=$(_jq '.dedupeMode // "newest"')
+  rclone_args=$(_jq '.args? | join(" ")')
 
   echo "Destination: $rclone_destination"
   echo "Destination subdir file: ${rclone_destination_subdir_file}"
   echo "Run dedupe: ${rclone_dedupe}"
   echo "Dedupe mode: ${rclone_dedupe_mode}"
+  echo "Additonal args: ${rclone_args}"
 
   rclone_destination_subdir=""
   if [ -n "$rclone_destination_subdir_file" ]; then
@@ -87,11 +89,11 @@ for destination in $destinations; do
 
   rclone_target="${rclone_destination}/${rclone_destination_subdir}"
   echo "Target: ${rclone_target}"
-  rclone copy "${rclone_source}" "${rclone_target}" --size-only --progress --stats=2s
+  rclone copy "${rclone_source}" "${rclone_target}" --size-only --progress --stats=2s ${rclone_args}
 
   if [[ "$rclone_dedupe" == "true" ]]; then
     echo "Running Dedupe for: ${rclone_target}"
-    rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}"
+    rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}" ${rclone_args}
   fi
 done
 

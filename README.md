@@ -69,6 +69,7 @@ It's highly recommended to use secrets mangement to avoid storing sensitive cred
       * oldest
       * largest
       * rename
+* `args`: Optional. An array of additional arguments to pass to rclone.
 
 #### Example
 
