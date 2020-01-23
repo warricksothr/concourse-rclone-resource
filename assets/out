@@ -80,7 +80,7 @@ for destination in $destinations; do
 
   rclone_target="${rclone_destination}/${rclone_destination_subdir}"
   echo "Target: ${rclone_target}"
-  rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf --size-only --progress --stats-one-line --stats=2s
+  rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf --size-only --progress --stats=2s
 done
 
 jq -n "{
