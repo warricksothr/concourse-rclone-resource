@@ -67,6 +67,8 @@ destinations=$(jq -r '.params.destination[] | @base64' < "$payload")
 echo "Using encoded destinations:"
 echo " ${destinations}"
 
+file_links=()
+
 for destination in $destinations; do
   _jq() {
     echo "${destination}" | base64 -d | jq -r "${1}"
@@ -77,12 +79,16 @@ for destination in $destinations; do
   rclone_dedupe=$(_jq '.dedupe // "false"')
   rclone_dedupe_mode=$(_jq '.dedupeMode // "newest"')
   rclone_args=$(_jq '.args // [] | join(" ")')
+  rclone_link=$(_jq '.link // "false"')
+  rclone_link_find_filter=$(_jq '.linkFilter // "-maxdepth 1 -type f"')
 
   echo "Destination: $rclone_destination"
   echo "Destination subdir file: ${rclone_destination_subdir_file}"
   echo "Run dedupe: ${rclone_dedupe}"
   echo "Dedupe mode: ${rclone_dedupe_mode}"
   echo "Additonal args: ${rclone_args}"
+  echo "Generate link: ${rclone_link}"
+  echo "Link find filter: ${rclone_link_find_filter}"
 
   rclone_destination_subdir=""
   if [ -n "$rclone_destination_subdir_file" ]; then
@@ -101,11 +107,43 @@ for destination in $destinations; do
     rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}" --progress --stats=2s ${rclone_args}
   fi
 
+  if [[ "${rclone_link}" == "true" ]]; then
+    # shellcheck disable=2086
+    filesToLink=$(find "${rclone_source}" ${rclone_link_find_filter})
+    echo "Files to link:"
+    echo "${filesToLink}"
+    for file in ${filesToLink}; do
+      rclone_target_file="${rclone_target}/${file}"
+      echo "Generating Link for: ${rclone_target_file}"
+      file_link=$(rclone link "${rclone_target_file}")
+      file_links+=( "${rclone_target_file}" "${file_link}" )
+    done
+  fi
+
   echo "rclone job complete for ${rclone_source} -> ${rclone_target}"
 done
 
-jq -n "{
-  version: {
-    digest: $( echo -n "sha256:$sha256" | jq -R . )
-  }
-}" >&3
+if (( ${#file_links[@]} )); then
+  echo "File Links:" "${file_links[@]}"
+  # shellcheck disable=2068
+  metadata="$(printf '%s=%s,' ${file_links[@]})"
+  metadata="${metadata::-1}"
+  echo "Metadata: ${metadata}"
+  echo -n "{\"value\":\"${metadata}\"}" | jq -r . > /tmp/build/put/links
+  jq -n "{
+    version: {
+      build: $( echo -n "${BUILD_ID}" | jq -R .),
+      digest: $( echo -n "sha256:$sha256" | jq -R . ),
+      metadata: [
+        $( echo -n "{\"name\":\"links\", \"value\":\"${metadata}\"}" | jq -r . )
+      ]
+    }
+  }" >&3
+else 
+  jq -n "{
+    version: {
+      $( echo -n "build:${BUILD_ID}" | jq -R .),
+      digest: $( echo -n "sha256:$sha256" | jq -R . )
+    }
+  }" >&3
+fi
