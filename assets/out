@@ -68,10 +68,13 @@ for destination in $destinations; do
   }
 
   rclone_destination=$(_jq '.dir')
-  echo "Destination: $rclone_destination"
-
   rclone_destination_subdir_file=$(_jq '.subdir // ""')
+  rclone_dedupe=$(_jq '.dedupe // "false"')
+  rclone_dedupe_mode=$(_jq '.dedupe-mode // "newest"')
+
+  echo "Destination: $rclone_destination"
   echo "Destination subdir file: ${rclone_destination_subdir_file}"
+
   rclone_destination_subdir=""
   if [ -n "$rclone_destination_subdir_file" ]; then
     echo "Looking in ${source}/${rclone_destination_subdir_file} for subdir to use"
@@ -81,6 +84,11 @@ for destination in $destinations; do
   rclone_target="${rclone_destination}/${rclone_destination_subdir}"
   echo "Target: ${rclone_target}"
   rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf --size-only --progress --stats=2s
+
+  if [[ "$rclone_dedupe" == "true" ]]; then
+    rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}"
+  fi
+
 done
 
 jq -n "{
