@@ -25,16 +25,15 @@ load_files() {
     files=$(jq -r '.source.files? | keys? | join(" ") // ""' < "$1")
     
     set -e
-    # TODO: Remove Me - DEBUGGING
-    echo "Files:"
-    echo "$files"
     if [[ -n "${files}" ]]; then
         for fileName in $files; do
             local jq_path
             local content
             jq_path=".source.files.${fileName}"
             content=$(jq -r "${jq_path}" < "$1")
-            echo "$content" > "/tmp/${fileName}"
+            echo "$content" > "${TMPDIR}/${fileName}"
+            echo "Wrote: ${TMPDIR}/${fileName}"
         done
+        ls -alh "${TMPDIR}"
     fi
 }
