@@ -1,5 +1,6 @@
 FROM alpine:3.11
-MAINTAINER Drew Short <warrick@sothr.com>
+
+LABEL maintainer="Drew Short <warrick@sothr.com>"
 
 ARG rclone_version=v1.50.2
 ARG rclone_arch=amd64
