@@ -60,6 +60,9 @@ echo "sha256:${sha256}"
 rclone_source="${local_source_dir}"
 echo "Source: ${rclone_source}"
 
+rclone_sha1=$(rclone sha1sum "${rclone_source}" | cut -d' ' -f1)
+echo "rclone sha1:${rclone_sha1}"
+
 destinations=$(jq -r '.params.destination[] | @base64' < "$payload")
 echo "Using encoded destinations:"
 echo " ${destinations}"
@@ -95,8 +98,10 @@ for destination in $destinations; do
   if [[ "$rclone_dedupe" == "true" ]]; then
     echo "Running Dedupe for: ${rclone_target}"
      # shellcheck disable=2086
-    rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}" ${rclone_args}
+    rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}" --progress --stats=2s ${rclone_args}
   fi
+
+  echo "rclone job complete for ${rclone_source} -> ${rclone_target}"
 done
 
 jq -n "{
