@@ -61,11 +61,12 @@ rclone_source="local:${local_source_dir}"
 echo "Source: ${rclone_source}"
 
 destinations=$(jq -r '.params.destination[] | @base64' < $payload)
-echo "Using encoded destinations: ${destinations}"
+echo "Using encoded destinations:"
+echo " ${destinations}"
 
 for destination in $destinations; do
   _jq() {
-    echo ${destination} | base64 --decode | jq -r ${1}
+    echo ${destination} | base64 -d | jq -r ${1}
   }
 
   rclone_destination=$(_jq '.dir')
