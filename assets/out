@@ -15,7 +15,7 @@ source "$(dirname $0)/common.sh"
 
 source=$1
 
-if [ -z "$source" ]; then
+if [[ -z "$source" ]]; then
   echo "usage: $0 <path/to/source>"
   exit 1
 fi
@@ -26,22 +26,18 @@ PATH=/usr/local/bin:$PATH
 payload=$(mktemp "$TMPDIR/rclone-resource-request.XXXXXX")
 cat > "$payload" <&0
 
-# TODO: Remove Me - DEBUGGING
-echo "Payload:"
-cat "$payload"
-
 load_config "$payload"
 load_files "$payload"
 
 rclone_source_directory=$(jq -r '.params.source // ""' < "$payload")
 rclone_destinations=$(jq -r '.params.destination[]? | .dir // ""' < "$payload")
 
-if [ -z "$rclone_source_directory" ]; then
+if [[ -z "$rclone_source_directory" ]]; then
   echo "invalid source directory (missing source)"
   exit 1
 fi
 
-if [ -z "$rclone_destinations" ]; then
+if [[ -z "$rclone_destinations" ]]; then
   echo "invalid destination (missing destination)"
   exit 1
 fi

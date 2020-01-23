@@ -11,9 +11,6 @@ load_config() {
     if [ -s "$config_path" ]; then
         mkdir -p $rclone_config_path
         mv "$config_path" $rclone_config_file
-        # TODO: Remove Me - DEBUGGING
-        echo "Config file:"
-        cat $rclone_config_file
         chmod 500 $rclone_config_file
     else
         echo "No config provided"
@@ -31,14 +28,13 @@ load_files() {
     # TODO: Remove Me - DEBUGGING
     echo "Files:"
     echo "$files"
-    if [[ ! -z "${files}" ]]; then
+    if [[ -n "${files}" ]]; then
         for fileName in $files; do
-            local jq_path=".source.files.${fileName}"
-            local content=$(jq -r "${jq_path}" < "$1")
+            local jq_path
+            local content
+            jq_path=".source.files.${fileName}"
+            content=$(jq -r "${jq_path}" < "$1")
             echo "$content" > "/tmp/${fileName}"
-            # TODO: Remove Me - DEBUGGING
-            echo "File /tmp/${fileName}"
-            cat "/tmp/${fileName}"
         done
     fi
 }
