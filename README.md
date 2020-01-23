@@ -1,4 +1,4 @@
-# concourse-rclone-compose-resource
+# concourse-rclone-resource
 
 A Concourse CI resource that executes [`rclone`](https://rclone.org/) 
 against a remote host.
@@ -24,14 +24,14 @@ resource_types:
 
 * `config`: Required. The rclone config file contents to use.
 * `password`: Optional. Encryption password used for encrypted rclone configurations. Please use secrets management for this value.
-* `files`: Optional. Additional files to write to the /tmp directory. This is a map of key/value pairs for the filename and contents of that file.
+* `files`: Optional. Additional files to write to the /tmp/rclone directory. This is a map of key/value pairs for the filename and contents of that file.
 
 ### Example
 
 ```bash
 resources:
-- name: docker-compose
-  type: docker-compose
+- name: rclone
+  type: rclone
   source:
     config: |
       [remote]
@@ -39,7 +39,7 @@ resources:
         client_secret = <Your Secret>
         scope = drive
         root_folder_id = <Your root folder id>
-        service_account_file = /tmp/serviceAccountFile
+        service_account_file = /tmp/rclone/serviceAccountFile
         token = {"access_token":"XXX","token_type":"Bearer","refresh_token":"XXX","expiry":"2014-03-16T13:57:58.955387075Z"}
 ```
 

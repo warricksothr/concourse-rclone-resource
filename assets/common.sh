@@ -1,5 +1,6 @@
 #!/usr/bin/bash
-export TMPDIR=${TMPDIR:-/tmp}
+export TMPDIR=${TMPDIR:-/tmp/rclone}
+mkdir -p "${TMPDIR}"
 
 load_config() {
     local config_path=$TMPDIR/rclone_config
