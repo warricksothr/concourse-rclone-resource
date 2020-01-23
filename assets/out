@@ -93,7 +93,6 @@ for destination in $destinations; do
     echo "Running Dedupe for: ${rclone_target}"
     rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}"
   fi
-
 done
 
 jq -n "{
