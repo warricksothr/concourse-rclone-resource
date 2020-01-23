@@ -70,7 +70,7 @@ for destination in $destinations; do
   rclone_destination=$(_jq '.dir')
   rclone_destination_subdir_file=$(_jq '.subdir // ""')
   rclone_dedupe=$(_jq '.dedupe // "false"')
-  rclone_dedupe_mode=$(_jq '.dedupe-mode // "newest"')
+  rclone_dedupe_mode=$(_jq '.dedupeMode // "newest"')
 
   echo "Destination: $rclone_destination"
   echo "Destination subdir file: ${rclone_destination_subdir_file}"

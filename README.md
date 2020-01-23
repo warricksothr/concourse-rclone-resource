@@ -61,7 +61,7 @@ It's highly recommended to use secrets mangement to avoid storing sensitive cred
     * `dir`: Required. A rclone destination for the files. ex. `remote:some/location`
     * `subdir`: Optional. A file that includes additional path information to be appended to the end of destination.
     * `dedupe`: Optional. Run `rsync dedupe` after syncing files. Default false
-    * `dedupe-mode`: Optional. The dedupe mode to use. Default newest. [rclone dedupe](https://rclone.org/commands/rclone_dedupe/)
+    * `dedupeMode`: Optional. The dedupe mode to use. Default newest. [rclone dedupe](https://rclone.org/commands/rclone_dedupe/)
       * skip
       * first
       * newest (default)
