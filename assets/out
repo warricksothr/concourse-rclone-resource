@@ -49,8 +49,9 @@ jq -c '.params.destination[] | .dir' < "$payload"
 local_source_dir="${source}/${rclone_source_directory}"
 ls -alh "${local_source_dir}"
 
-sha256=$( (find "${local_source_dir}" -type f -exec sha256sum {} \;) | cut -d ' ' -f1 )
-
+echo "Generating SHA256"
+(find "${local_source_dir}" -type f -exec sha256sum {} \;) | cut -d ' ' -f1 | xargs echo /tmp/rclone_source.sha256
+sha256=$(sha256sum /tmp/rclone_source.sha256 | cut -d' ' -f1)
 echo "sha256:${sha256}"
 
 # Source is always the same for each destination
@@ -79,11 +80,11 @@ for destination in $destinations; do
 
   rclone_target="${rclone_destination}/${rclone_destination_subdir}"
   echo "Target: ${rclone_target}"
-  rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf --progress --size-only
+  rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf --size-only --progress --stats-one-line --stats=2s
 done
 
 jq -n "{
   version: {
-    digest: $( (echo -n "sha256:"; echo "$sha256") | jq -R . )
+    digest: $( echo -n "sha256:$sha256" | jq -R . )
   }
 }" >&3
