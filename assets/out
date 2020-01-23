@@ -74,6 +74,8 @@ for destination in $destinations; do
 
   echo "Destination: $rclone_destination"
   echo "Destination subdir file: ${rclone_destination_subdir_file}"
+  echo "Run dedupe: ${rclone_dedupe}"
+  echo "Dedupe mode: ${rclone_dedupe_mode}"
 
   rclone_destination_subdir=""
   if [ -n "$rclone_destination_subdir_file" ]; then
@@ -86,6 +88,7 @@ for destination in $destinations; do
   rclone copy "${rclone_source}" "${rclone_target}" --config /opt/rclone/config/.rclone.conf --size-only --progress --stats=2s
 
   if [[ "$rclone_dedupe" == "true" ]]; then
+    echo "Running Dedupe for: ${rclone_target}"
     rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}"
   fi
 
