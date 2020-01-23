@@ -23,17 +23,17 @@ fi
 PATH=/usr/local/bin:$PATH
 
 payload=$(mktemp $TMPDIR/rclone-resource-request.XXXXXX)
-cat > $payload <&0
+cat > "$payload" <&0
 
 # TODO: Remove Me - DEBUGGING
 echo "Payload:"
-cat $payload
+cat "$payload"
 
-load_config $payload
-load_files $payload
+load_config "$payload"
+load_files "$payload"
 
-rclone_source_directory=$(jq -r '.params.source // ""' < $payload)
-rclone_destinations=$(jq -r '.params.destination[]? | .dir // ""' < $payload)
+rclone_source_directory=$(jq -r '.params.source // ""' < "$payload")
+rclone_destinations=$(jq -r '.params.destination[]? | .dir // ""' < "$payload")
 
 if [ -z "$rclone_source_directory" ]; then
   echo "invalid source directory (missing source)"
@@ -50,9 +50,9 @@ echo "Destinations:"
 jq -c '.params.destination[] | .dir' < $payload
 
 local_source_dir="${source}/${rclone_source_directory}"
-ls -alh ${local_source_dir}
+ls -alh "${local_source_dir}"
 
-sha256=$((find ${local_source_dir} -type f -exec sha256sum {} \;) | cut -d ' ' -f1)
+sha256=$( (find "${local_source_dir}" -type f -exec sha256sum {} \;) | cut -d ' ' -f1 )
 
 echo "sha256:${sha256}"
 
@@ -60,13 +60,13 @@ echo "sha256:${sha256}"
 rclone_source="local:${local_source_dir}"
 echo "Source: ${rclone_source}"
 
-destinations=$(jq -r '.params.destination[] | @base64' < $payload)
+destinations=$(jq -r '.params.destination[] | @base64' < "$payload")
 echo "Using encoded destinations:"
 echo " ${destinations}"
 
 for destination in $destinations; do
   _jq() {
-    echo ${destination} | base64 -d | jq -r ${1}
+    echo "${destination}" | base64 -d | jq -r "${1}"
   }
 
   rclone_destination=$(_jq '.dir')
@@ -75,9 +75,9 @@ for destination in $destinations; do
   rclone_destination_subdir_file=$(_jq '.subdir // ""')
   echo "Destination subdir file: ${rclone_destination_subdir_file}"
   rclone_destination_subdir=""
-  if [ ! -z "$rclone_destination_subdir_file" ]; then
+  if [ -n "$rclone_destination_subdir_file" ]; then
     echo "Looking in ${source}/${rclone_destination_subdir_file} for subdir to use"
-    rclone_destination_subdir=$(cat "${source}/${rclone_destination_subdir_file}" | head -n 1)
+    rclone_destination_subdir=$(head -n 1 < "${source}/${rclone_destination_subdir_file}")
   fi
 
   rclone_target="${rclone_destination}/${rclone_destination_subdir}"
@@ -87,6 +87,6 @@ done
 
 jq -n "{
   version: {
-    digest: $((echo -n "sha256:"; echo "$sha256") | jq -R .)
+    digest: $( (echo -n "sha256:"; echo "$sha256") | jq -R . )
   }
 }" >&3
