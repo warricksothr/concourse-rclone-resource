@@ -3,11 +3,10 @@ export TMPDIR=${TMPDIR:-/tmp/rclone}
 mkdir -p "${TMPDIR}"
 
 load_config() {
-    local config_path=$TMPDIR/rclone_config
-    local rclone_config_path=/opt/rclone/config
-    local rclone_config_file=$rclone_config_path/.rclone.conf
+    RCLONE_CONFIG=$TMPDIR/.config/rclone_config
+    export RCLONE_CONFIG
 
-    (jq -r '.source.config // empty' < "$1") > "$config_path"
+    (jq -r '.source.config // empty' < "$1") > "$RCLONE_CONFIG"
     config_pass=$(jq -r '.source.password // ""' < "$1")
 
     if [[ -n "${config_pass}" ]]; then
@@ -15,10 +14,8 @@ load_config() {
         export RCLONE_CONFIG_PASS
     fi
 
-    if [ -s "$config_path" ]; then
-        mkdir -p $rclone_config_path
-        mv "$config_path" $rclone_config_file
-        chmod 500 $rclone_config_file
+    if [ -s "${RCLONE_CONFIG}" ]; then
+        chmod 500 "${RCLONE_CONFIG}"
     else
         echo "No config provided"
         exit 1
