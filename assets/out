@@ -10,7 +10,8 @@ echo "BUILD_NAME: $BUILD_NAME"
 echo "BUILD_JOB_NAME: $BUILD_JOB_NAME"
 echo "BUILD_PIPELINE_NAME: $BUILD_PIPELINE_NAME"
 
-source $(dirname $0)/common.sh
+# shellcheck disable=1090
+source "$(dirname $0)/common.sh"
 
 source=$1
 
@@ -22,7 +23,7 @@ fi
 # for jq
 PATH=/usr/local/bin:$PATH
 
-payload=$(mktemp $TMPDIR/rclone-resource-request.XXXXXX)
+payload=$(mktemp "$TMPDIR/rclone-resource-request.XXXXXX")
 cat > "$payload" <&0
 
 # TODO: Remove Me - DEBUGGING
@@ -47,7 +48,7 @@ fi
 
 echo "Source directory: $rclone_source_directory"
 echo "Destinations:"
-jq -c '.params.destination[] | .dir' < $payload
+jq -c '.params.destination[] | .dir' < "$payload"
 
 local_source_dir="${source}/${rclone_source_directory}"
 ls -alh "${local_source_dir}"

@@ -77,6 +77,7 @@ jobs:
         destination: 
           - dir: "remote:backup"
             subdir: code/target
+          - dir: "remote2:release"
 ```
 
 ## License
