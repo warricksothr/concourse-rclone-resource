@@ -131,6 +131,7 @@ if (( ${#file_links[@]} )); then
   metadata=${metadata::-1}
   links_json=$( echo -n "{\"links\":[${metadata}]}" | jq -r . )
   echo "Links: ${links_json}"
+  mkdir -p "${rclone_source_directory}/.rclone"
   echo "$links_json" > "${rclone_source_directory}/.rclone/links"
   jq -n "{
     version: {
