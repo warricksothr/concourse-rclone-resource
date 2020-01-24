@@ -126,17 +126,16 @@ done
 if (( ${#file_links[@]} )); then
   echo "File Links:" "${file_links[@]}"
   # shellcheck disable=2068
-  metadata="$(printf '%s=%s,' ${file_links[@]})"
-  metadata="${metadata::-1}"
-  echo "Metadata: ${metadata}"
-  echo -n "{\"value\":\"${metadata}\"}" | jq -r . > /tmp/build/put/links
+  metadata=$(printf '{"name": "%s", "value": "%s"},' ${file_links[@]})
+  metadata=${metadata::-1}
+  links_json=$( echo -n "{\"links\":[${metadata}]}" | jq -r . )
+  echo "Links: ${links_json}"
+  echo "$links_json" > "${rclone_source_directory}/.rclone/links"
   jq -n "{
     version: {
-      build: $( echo -n "${BUILD_ID}" | jq -R .),
+      $( echo -n "build:${BUILD_ID}" | jq -R .),
       digest: $( echo -n "sha256:$sha256" | jq -R . ),
-      metadata: [
-        $( echo -n "{\"name\":\"links\", \"value\":\"${metadata}\"}" | jq -r . )
-      ]
+      metadata: ${links_json}
     }
   }" >&3
 else 
