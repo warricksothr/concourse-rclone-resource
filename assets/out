@@ -60,9 +60,6 @@ echo "sha256:${sha256}"
 rclone_source="${local_source_dir}"
 echo "Source: ${rclone_source}"
 
-rclone_sha1=$(rclone sha1sum "${rclone_source}" | cut -d' ' -f1)
-echo "rclone sha1:${rclone_sha1}"
-
 destinations=$(jq -r '.params.destination[] | @base64' < "$payload")
 echo "Using encoded destinations:"
 echo " ${destinations}"
