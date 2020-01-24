@@ -93,7 +93,11 @@ for destination in $destinations; do
     rclone_destination_subdir=$(head -n 1 < "${source}/${rclone_destination_subdir_file}")
   fi
 
-  rclone_target="${rclone_destination}/${rclone_destination_subdir}"
+  if [[ -z "${rclone_destination_subdir}" ]]; then
+    rclone_target="${rclone_destination}"
+  else
+    rclone_target="${rclone_destination}/${rclone_destination_subdir}"
+  fi
   echo "Target: ${rclone_target}"
   # shellcheck disable=2086
   rclone copy "${rclone_source}" "${rclone_target}" --size-only --progress --stats=2s ${rclone_args}
@@ -111,7 +115,7 @@ for destination in $destinations; do
     echo "${filesToLink}"
     for file in ${filesToLink}; do
       remote_file=${file#"$rclone_source/"}
-      rclone_target_file="${rclone_target}${remote_file}"
+      rclone_target_file="${rclone_target}/${remote_file}"
       echo "Generating Link for: ${rclone_target_file}"
       file_link=$(rclone link "${rclone_target_file}")
       file_links+=( "${rclone_target_file}" "${file_link}" )
