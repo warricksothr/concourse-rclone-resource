@@ -114,7 +114,7 @@ for destination in $destinations; do
     echo "${filesToLink}"
     for file in ${filesToLink}; do
       remote_file=${file#"$rclone_source/"}
-      rclone_target_file="${rclone_target}/${remote_file}"
+      rclone_target_file="${rclone_target}${remote_file}"
       echo "Generating Link for: ${rclone_target_file}"
       file_link=$(rclone link "${rclone_target_file}")
       file_links+=( "${rclone_target_file}" "${file_link}" )
