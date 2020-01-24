@@ -127,9 +127,8 @@ if (( ${#file_links[@]} )); then
   metadata=$(printf '{"name": "%s", "value": "%s"},' ${file_links[@]})
   metadata=${metadata::-1}
   links_json=$( echo -n "{\"links\":[${metadata}]}" | jq -r . )
-  echo "Links: ${links_json}"
-  mkdir -p "${rclone_source}/.rclone"
-  echo "$links_json" > "${rclone_source}/.rclone/links"
+  echo "$links_json" > "${TMPDIR}/.rclone_links"
+  cat "${TMPDIR}/.rclone_links"
 fi
 
 jq -n "{
