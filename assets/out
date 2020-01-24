@@ -129,11 +129,20 @@ if (( ${#file_links[@]} )); then
   links_json=$( echo -n "{\"links\":[${metadata}]}" | jq -r . )
   echo "$links_json" > "${TMPDIR}/.rclone_links"
   cat "${TMPDIR}/.rclone_links"
+  jq -n "{
+    version: {
+      build: $( echo -n "${BUILD_ID}" | jq -R .),
+      digest: $( echo -n "sha256:$sha256" | jq -R . )
+    },
+    metadata: {
+      links: $( echo -n "${file_links[@]}" |  jq -R . )
+    }
+  }" >&3
+else
+  jq -n "{
+    version: {
+      build: $( echo -n "${BUILD_ID}" | jq -R .),
+      digest: $( echo -n "sha256:$sha256" | jq -R . )
+    }
+  }" >&3
 fi
-
-jq -n "{
-  version: {
-    build: $( echo -n "${BUILD_ID}" | jq -R .),
-    digest: $( echo -n "sha256:$sha256" | jq -R . )
-  }
-}" >&3
