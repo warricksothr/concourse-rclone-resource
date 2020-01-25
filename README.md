@@ -71,7 +71,7 @@ It's highly recommended to use secrets mangement to avoid storing sensitive cred
       * rename
     * `link`: Optional. Create a link to the resource if possible. Default `false`
     * `linkFilter`: Optional. A find filter on the source directory for files to generate links to. Default `-maxdepth 1 -type f`
-* `args`: Optional. An array of additional arguments to pass to rclone.
+    * `args`: Optional. An array of additional arguments to pass to rclone.
 
 #### Example
 
