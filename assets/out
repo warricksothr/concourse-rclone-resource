@@ -138,9 +138,7 @@ if (( ${#file_links[@]} )); then
       build: $( echo -n "${BUILD_ID}" | jq -R .),
       digest: $( echo -n "sha256:${sha256}" | jq -R . )
     },
-    metadata: [
-      ${metadata}
-    ]
+    metadata: ${metadata}
   }" >&3
 else
   jq -n "{
