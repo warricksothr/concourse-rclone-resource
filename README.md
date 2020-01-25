@@ -3,7 +3,7 @@
 A Concourse CI resource that executes [`rclone`](https://rclone.org/) 
 against a remote host.
 
-See [Docker Hub](https://cloud.docker.com/repository/docker/warricksothr/concourse-rclone-resource)
+See [Docker Hub](https://cloud.docker.com/repository/docker/sothr/concourse-rclone-resource)
 for tagged image versions available.
 
 ## Resource Type Configuration
@@ -13,11 +13,8 @@ resource_types:
 - name: rclone
   type: docker-image
   source:
-    repository: warricksothr/concourse-rclone-resource
+    repository: sothr/concourse-rclone-resource
     tag: latest
-  files:
-    serviceAccountFile: |
-      ...contents...
 ```
 
 ## Source Configuration
@@ -35,12 +32,15 @@ resources:
   source:
     config: |
       [remote]
-        client_id = <Your ID>
-        client_secret = <Your Secret>
-        scope = drive
-        root_folder_id = <Your root folder id>
-        service_account_file = /tmp/rclone/serviceAccountFile
-        token = {"access_token":"XXX","token_type":"Bearer","refresh_token":"XXX","expiry":"2014-03-16T13:57:58.955387075Z"}
+      client_id = <Your ID>
+      client_secret = <Your Secret>
+      scope = drive
+      root_folder_id = <Your root folder id>
+      service_account_file = /tmp/rclone/serviceAccountFile
+      token = {"access_token":"XXX","token_type":"Bearer","refresh_token":"XXX","expiry":"2014-03-16T13:57:58.955387075Z"}
+    files:
+      serviceAccountFile: |
+        ...contents...
 ```
 
 ### Note
