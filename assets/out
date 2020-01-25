@@ -130,7 +130,7 @@ if (( ${#file_links[@]} )); then
   # shellcheck disable=2068
   metadata=$(printf '{"name": "%s", "value": "%s"},' ${file_links[@]})
   metadata="[${metadata::-1}]"
-  links_json=$( echo -n "{\"links\":[${metadata}]}" | jq -r . )
+  links_json=$( echo -n "{\"links\":${metadata}}" | jq -r . )
   echo "$links_json" > "${TMPDIR}/.rclone_links"
   cat "${TMPDIR}/.rclone_links"
   jq -n "{
