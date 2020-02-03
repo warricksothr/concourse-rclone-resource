@@ -73,18 +73,20 @@ for destination in $destinations; do
 
   rclone_destination=$(_jq '.dir')
   rclone_destination_subdir_file=$(_jq '.subdir // ""')
+  rclone_command=$(_jq '.command // "copy"')
+  rclone_args=$(_jq '.args // [] | join(" ")')
   rclone_dedupe=$(_jq '.dedupe // "false"')
   rclone_dedupe_mode=$(_jq '.dedupeMode // "newest"')
-  rclone_args=$(_jq '.args // [] | join(" ")')
   rclone_link=$(_jq '.link // "false"')
   rclone_link_find_filter=$(_jq '.linkFilter // "-maxdepth 1 -type f"')
   rclone_allow_failure=$(_jq '.allowFailure // "false"')
 
   echo "Destination: $rclone_destination"
   echo "Destination subdir file: ${rclone_destination_subdir_file}"
+  echo "Command: ${rclone_command}"
+  echo "Additonal args: ${rclone_args}"
   echo "Run dedupe: ${rclone_dedupe}"
   echo "Dedupe mode: ${rclone_dedupe_mode}"
-  echo "Additonal args: ${rclone_args}"
   echo "Generate link: ${rclone_link}"
   echo "Link find filter: ${rclone_link_find_filter}"
   echo "Allow failure: ${rclone_allow_failure}"
@@ -106,7 +108,7 @@ for destination in $destinations; do
   fi
   echo "Target: ${rclone_target}"
   # shellcheck disable=2086
-  rclone copy "${rclone_source}" "${rclone_target}" --size-only --progress --stats=2s ${rclone_args}
+  rclone ${rclone_command} "${rclone_source}" "${rclone_target}" --size-only --progress --stats=2s ${rclone_args}
   copy_rc=$?
   if [[ "${rclone_allow_failure}" = "true" && $copy_rc -gt 0 ]]; then
     echo "Rclone copy failed. Switching to next destination."

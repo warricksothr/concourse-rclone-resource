@@ -61,6 +61,12 @@ It's highly recommended to use secrets mangement to avoid storing sensitive cred
 * `destination`: Required. A list of destinations to copy files to.
     * `dir`: Required. A rclone destination for the files. ex. `remote:some/location`
     * `subdir`: Optional. A file that includes additional path information to be appended to the end of destination.
+    * `command`: Optional. The rclone command to run. Default `copy`
+      * copy (default)
+      * copyto (default)
+      * move
+      * sync
+    * `args`: Optional. An array of additional arguments to pass to rclone.
     * `dedupe`: Optional. Run `rsync dedupe` after syncing files. Default `false`
     * `dedupeMode`: Optional. The dedupe mode to use. Default `newest`. [rclone dedupe](https://rclone.org/commands/rclone_dedupe/)
       * skip
@@ -71,9 +77,8 @@ It's highly recommended to use secrets mangement to avoid storing sensitive cred
       * rename
     * `link`: Optional. Create a link to the resource if possible. Default `false`
     * `linkFilter`: Optional. A find filter on the source directory for files to generate links to. Default `-maxdepth 1 -type f`
-    * `args`: Optional. An array of additional arguments to pass to rclone.
     * `allowFailure`: Optional. Allow this destination to fail without failing the job. Default `false`
-
+    
 #### Example
 
 ```bash
