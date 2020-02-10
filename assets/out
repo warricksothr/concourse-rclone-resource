@@ -31,6 +31,8 @@ load_files "$payload"
 
 rclone_source_directory=$(jq -r '.params.source // ""' < "$payload")
 rclone_destinations=$(jq -r '.params.destination[]? | .dir // ""' < "$payload")
+rclone_link_destination=$(jq -r '.params.linkDestination // ""' < "$payload")
+rclone_link_destination_subdir_file=$(jq -r '.params.linkDestinationSubDir // ""' < "$payload")
 
 if [[ -z "$rclone_source_directory" ]]; then
   echo "invalid source directory (missing source)"
@@ -152,6 +154,7 @@ for destination in $destinations; do
   echo "rclone job complete for ${rclone_source} -> ${rclone_target}"
 done
 
+# Arithmetic expression to check size of array
 if (( ${#file_links[@]} )); then
   echo "File Links:" "${file_links[@]}"
   # shellcheck disable=2068
@@ -159,6 +162,21 @@ if (( ${#file_links[@]} )); then
   metadata="[${metadata::-1}]"
   links_json=$( echo -n "{\"links\":${metadata}}" | jq -r . )
   echo "$links_json" > "${TMPDIR}/.rclone_links"
+  if [[ -n "${rclone_link_destination}" ]]; then
+    rclone_link_destination_subdir=""
+    if [ -n "$rclone_link_destination_subdir_file" ]; then
+      echo "Looking in ${source}/${rclone_link_destination_subdir_file} for subdir to use"
+      rclone_destination_subdir=$(head -n 1 < "${source}/${rclone_link_destination_subdir_file}")
+    fi
+
+    if [[ -z "${rclone_link_destination_subdir}" ]]; then
+      rclone_link_target="${rclone_link_destination}"
+    else
+      rclone_link_target="${rclone_link_destination}/${rclone_link_destination_subdir}"
+    fi
+    echo "Link Target: ${rclone_link_target}"
+    rclone copy "${TMPDIR}/.rclone_links" ${rclone_link_target} --size-only --progress --stats=2s
+  fi
   cat "${TMPDIR}/.rclone_links"
   jq -n "{
     version: {
