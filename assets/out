@@ -176,7 +176,7 @@ if (( ${#file_links[@]} )); then
       rclone_link_target="${rclone_link_destination}/${rclone_link_destination_subdir}"
     fi
     echo "Link Target: ${rclone_link_target}"
-    rclone copy "${links_json_file} ${rclone_link_target} --size-only --progress --stats=2s
+    rclone copy ${links_json_file} ${rclone_link_target} --size-only --progress --stats=2s
   fi
   cat "${links_json_file}"
   jq -n "{
