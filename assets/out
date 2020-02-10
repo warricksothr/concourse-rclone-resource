@@ -161,7 +161,8 @@ if (( ${#file_links[@]} )); then
   metadata=$(printf '{"name": "%s", "value": "%s"},' ${file_links[@]})
   metadata="[${metadata::-1}]"
   links_json=$( echo -n "{\"links\":${metadata}}" | jq -r . )
-  echo "$links_json" > "${TMPDIR}/.rclone_links"
+  links_json_file="${TMPDIR}/.rclone_links.json"
+  echo "$links_json" > "${links_json_file}"
   if [[ -n "${rclone_link_destination}" ]]; then
     rclone_link_destination_subdir=""
     if [ -n "$rclone_link_destination_subdir_file" ]; then
@@ -175,9 +176,9 @@ if (( ${#file_links[@]} )); then
       rclone_link_target="${rclone_link_destination}/${rclone_link_destination_subdir}"
     fi
     echo "Link Target: ${rclone_link_target}"
-    rclone copy "${TMPDIR}/.rclone_links" ${rclone_link_target} --size-only --progress --stats=2s
+    rclone copy "${links_json_file} ${rclone_link_target} --size-only --progress --stats=2s
   fi
-  cat "${TMPDIR}/.rclone_links"
+  cat "${links_json_file}"
   jq -n "{
     version: {
       build: $( echo -n "${BUILD_ID}" | jq -R .),
