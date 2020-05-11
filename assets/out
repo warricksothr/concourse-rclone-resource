@@ -82,6 +82,7 @@ for destination in $destinations; do
   rclone_link=$(_jq '.link // "false"')
   rclone_link_find_filter=$(_jq '.linkFilter // "-maxdepth 1 -type f"')
   rclone_allow_failure=$(_jq '.allowFailure // "false"')
+  rclone_sleep=$(_jq '.sleep // ""')
 
   echo "Destination: $rclone_destination"
   echo "Destination subdir file: ${rclone_destination_subdir_file}"
@@ -112,6 +113,9 @@ for destination in $destinations; do
   # shellcheck disable=2086
   rclone ${rclone_command} "${rclone_source}" "${rclone_target}" --size-only --progress --stats=2s ${rclone_args}
   copy_rc=$?
+  if [[ -n "${rclone_sleep}" ]]; then
+    sleep ${rclone_sleep}
+  fi
   if [[ "${rclone_allow_failure}" = "true" && $copy_rc -gt 0 ]]; then
     echo "Rclone copy failed. Switching to next destination."
     continue
@@ -122,6 +126,9 @@ for destination in $destinations; do
      # shellcheck disable=2086
     rclone dedupe --dedupe-mode "${rclone_dedupe_mode}" "${rclone_target}" --progress --stats=2s ${rclone_args}
     dedupe_rc=$?
+    if [[ -n "${rclone_sleep}" ]]; then
+      sleep ${rclone_sleep}
+    fi
     if [[ "${rclone_allow_failure}" = "true" && $dedupe_rc -gt 0 ]]; then
       echo "Rclone dedupe failed. Switching to next destination."
       continue
@@ -139,6 +146,9 @@ for destination in $destinations; do
       echo "Generating Link for: ${rclone_target_file}"
       file_link=$(rclone link "${rclone_target_file}")
       link_rc=$?
+      if [[ -n "${rclone_sleep}" ]]; then
+        sleep ${rclone_sleep}
+      fi
       if [[ "${rclone_allow_failure}" = "true" && $link_rc -gt 0 ]]; then
         echo "Rclone linking failed. Switching to next target."
         continue
@@ -177,6 +187,9 @@ if (( ${#file_links[@]} )); then
     fi
     echo "Link Target: ${rclone_link_target}"
     rclone copy ${links_json_file} ${rclone_link_target} --progress --stats=2s
+    if [[ -n "${rclone_sleep}" ]]; then
+      sleep ${rclone_sleep}
+    fi
   fi
   cat "${links_json_file}"
   jq -n "{
