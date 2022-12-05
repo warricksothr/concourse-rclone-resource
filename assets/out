@@ -111,7 +111,7 @@ for destination in $destinations; do
   fi
   echo "Target: ${rclone_target}"
   # shellcheck disable=2086
-  rclone ${rclone_command} "${rclone_source}" "${rclone_target}" --size-only --progress --stats=2s ${rclone_args}
+  rclone ${rclone_command} "${rclone_source}" "${rclone_target}" --progress --stats=2s ${rclone_args}
   copy_rc=$?
   if [[ -n "${rclone_sleep}" ]]; then
     sleep ${rclone_sleep}
