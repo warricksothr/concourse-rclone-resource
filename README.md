@@ -11,9 +11,9 @@ for tagged image versions available.
 ```bash
 resource_types:
 - name: rclone
-  type: docker-image
+  type: registry-image
   source:
-    repository: sothr/concourse-rclone-resource
+    repository: docker.io/sothr/concourse-rclone-resource
     tag: latest
 ```
 
